@@ -89,7 +89,7 @@ public class AyatanaCompatibility.MetaIndicator : Wingpanel.Indicator {
         main_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
         main_box.set_size_request (200, -1);
 
-        label = new Gtk.Label ("No tray icons…") {
+        label = new Gtk.Label ("No tray icons") {
             sensitive = false,
             valign = Gtk.Align.CENTER,
             margin_top = 2,
@@ -140,6 +140,7 @@ public class AyatanaCompatibility.MetaIndicator : Wingpanel.Indicator {
     }
 
     public override void closed () {
+
     }
 
     private void load_blacklist () {
