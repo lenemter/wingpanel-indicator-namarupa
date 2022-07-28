@@ -257,7 +257,7 @@ public class AyatanaCompatibility.Indicator : IndicatorButton {
         var child = ((Gtk.Bin)item).get_child ();
         if (child != null) {
             if (child is Gtk.Image) {
-                image = (child as Gtk.Image);
+                image = child as Gtk.Image;
             } else if (child is Gtk.Container) {
                 image = check_for_image (child as Gtk.Container);
             }
@@ -267,7 +267,8 @@ public class AyatanaCompatibility.Indicator : IndicatorButton {
             var box_switch = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 5);
             var lbl = new Gtk.Label (label) {
                 halign = Gtk.Align.START,
-                margin_start = 6
+                margin_start = 6,
+                margin_end = 6
             };
             var active = ((Gtk.CheckMenuItem)item).get_active ();
             var button = new Gtk.Switch () {
@@ -331,7 +332,9 @@ public class AyatanaCompatibility.Indicator : IndicatorButton {
             button = new Gtk.ModelButton () {
                 text = label
             };
-            var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 3);
+            var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 3) {
+                margin_end = 12
+            };
             if (image != null && image.pixbuf != null) {
                 var img = new Gtk.Image.from_pixbuf (image.pixbuf);
                 hbox.add (button);

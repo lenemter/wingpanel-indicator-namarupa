@@ -103,7 +103,8 @@ public class AyatanaCompatibility.MetaIndicator : Wingpanel.Indicator {
         box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
             margin = 6,
             spacing = 10,
-            margin_start = 12
+            margin_start = 12,
+            margin_end = 12
         };
 
         stack = new Gtk.Stack () {
