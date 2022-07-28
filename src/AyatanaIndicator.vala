@@ -150,7 +150,10 @@ public class AyatanaCompatibility.Indicator : IndicatorButton {
                 main_stack.set_visible_child (main_grid);
                 reloaded = false;
             });
-            main_grid = new Gtk.Grid ();
+            main_grid = new Gtk.Grid () {
+                margin_top = 3,
+                margin_bottom = 3
+            };
             main_stack.add (main_grid);
 
             foreach (var item in entry.menu.get_children ()) {
