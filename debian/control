@@ -1,13 +1,13 @@
 Source: com.github.donadigo.wingpanel-indicator-namarupa
 Section: x11
 Priority: optional
-Maintainer: Lafydev <lafy@mailo.com>
+Maintainer: lenemter <lenemter@gmail.com>
 Build-Depends: debhelper (>= 10.5.1),
                libglib2.0-dev,
                libgranite-dev,
                libgtk-3-dev (>= 3.12),
                libindicator3-dev,
-               libwingpanel-2.0-dev | libwingpanel-dev,
+               libwingpanel-dev,
                meson,
                valac (>= 0.40.0)
 Standards-Version: 3.9.6
@@ -16,5 +16,5 @@ Package: com.github.donadigo.wingpanel-indicator-namarupa
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Enhances: wingpanel
-Description: WingPanel Namarupa Indicator
+Description: Wingpanel Namarupa Indicator
  this brings compatibility with Ayatana Indicator 

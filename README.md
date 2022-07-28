@@ -1,6 +1,6 @@
 # ![icon](data/icon.png) Wingpanel Namarupa Indicator
 
-![Screenshot](data/shot.png)
+![Screenshot](data/screenshot.png)
 
 ## Name Inspiration
 
@@ -18,12 +18,11 @@ You need to add Pantheon to the list of desktops abled to work with indicators:
 
 - With autostart (thanks to JMoerman)  
 
-System settings -> "Applications" -> "Startup" -> "Add Startup App…" -> "Type in a custom command"
+System settings -> Applications -> Startup -> Add Startup App… -> Type in a custom command
 
-Add `/usr/lib/x86_64-linux-gnu/indicator-application/indicator-application-service` as custom command to the auto start applications in the system settings  
+Add `/usr/lib/x86_64-linux-gnu/indicator-application/indicator-application-service` as custom command to the autostart applications in the System Settings  
 
-- With a terminal
-Open Terminal and run the following commands.
+- OR Open Terminal and run the following commands:
 
 ```bash
 mkdir -p ~/.config/autostart
@@ -31,11 +30,11 @@ cp /etc/xdg/autostart/indicator-application.desktop ~/.config/autostart/
 sed -i 's/^OnlyShowIn.*/OnlyShowIn=Unity;GNOME;Pantheon;/' ~/.config/autostart/indicator-application.desktop
 ```
 
-### Easy install for users
+## Installation for users
 
-Install the latest debian file :
+Install the latest debian file:
 
-- Download <a href="https://github.com/Lafydev/wingpanel-indicator-namarupa/blob/master/com.github.donadigo.wingpanel-indicator-namarupa_1.0.2_odin.deb">com.github.*odin.deb (broken)</a>
+- Download <a href="https://github.com/lenemter/wingpanel-indicator-namarupa/blob/master/com.github.donadigo.wingpanel-indicator-namarupa_1.0.2_odin.deb-broken">com.github.*odin.deb (broken)</a>
 - Open your Downloads folder in Files
 - Right click -> Open in -> Terminal
 
@@ -51,7 +50,7 @@ sudo apt remove com.github.donadigo.wingpanel-indicator-namarupa
 
 Reboot (`reboot`) or kill Wingpanel (`killall io.elementary.wingpanel`)
   
-### For developers
+## For developers
 
 You'll need the following dependencies:
 
@@ -83,6 +82,12 @@ Reboot (`reboot`) or kill Wingpanel (`killall io.elementary.wingpanel`)
 To uninstall with ninja:
 
 - Open a terminal in the build folder.
-- `sudo ninja uninstall`
+- Run `sudo ninja uninstall`
 
 Reboot (`reboot`) or kill Wingpanel (`killall io.elementary.wingpanel`)
+
+## Credits
+
+Forked from: [Lafydev/wingpanel-indicator-namarupa](https://github.com/Lafydev/wingpanel-indicator-namarupa)  
+Original idea: [donadigo/wingpanel-indicator-namarupa](https://github.com/donadigo/wingpanel-indicator-namarupa)  
+Original indicator: [elementary/wingpanel-indicator-ayatana](https://github.com/elementary/wingpanel-indicator-ayatana)
