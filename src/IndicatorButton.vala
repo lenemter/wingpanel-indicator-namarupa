@@ -26,8 +26,9 @@ public class AyatanaCompatibility.IndicatorButton : Gtk.EventBox {
     private Gtk.Box box;
 
     construct {
-        box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
-        box.set_homogeneous (true);
+        box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0) {
+            homogeneous = true
+        };
         add (box);
     }
 

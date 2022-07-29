@@ -16,7 +16,6 @@
  */
 
 public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
-    private Gee.HashSet<string> blacklist = new Gee.HashSet<string> ();
     private IndicatorFactory indicator_loader;
     private Gtk.Stack main_stack;
     private Gtk.Grid icons_grid;
@@ -25,7 +24,6 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
     public MainIndicator () {
         Object (code_name: "namarupa");
 
-        load_blacklist ();
         indicator_loader = new IndicatorFactory ();
 
         var indicators = indicator_loader.get_indicators ();
@@ -39,10 +37,6 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
 
         indicator_loader.entry_added.connect (create_entry);
         indicator_loader.entry_removed.connect (delete_entry);
-    }
-
-    private void load_blacklist () {
-        blacklist.add ("nm-applet"); //old network indicator (duplicate)
     }
 
     private void init_main_grid () {
@@ -87,10 +81,6 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
     }
 
     private void create_entry (TrayIcon icon) {
-        if (blacklist.contains (icon.name_hint ())) {
-            return;
-        }
-
         icons_grid.add (icon);
         icons_grid.show_all ();
 

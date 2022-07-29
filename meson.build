@@ -26,7 +26,6 @@ configure_file(output: 'config.h', configuration: conf)
 
 shared_module(
     meson.project_name(),
-    'src/AyatanaIndicator.vala',
     'src/Indicator.vala',
     'src/IndicatorButton.vala',
     'src/IndicatorFactory.vala',

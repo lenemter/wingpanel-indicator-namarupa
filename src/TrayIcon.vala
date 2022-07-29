@@ -15,7 +15,6 @@
 //   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //   */
 
-
 public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     public string code_name { get; construct; }
     public string display_name { get; construct; }
@@ -23,12 +22,12 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
     private Gtk.Stack main_stack;
     private Gtk.Grid main_grid;
+    private Gtk.Popover popover;
 
     private unowned IndicatorAyatana.ObjectEntry entry;
-    private string entry_name_hint;
+    public string name_hint { get { return entry.name_hint; } }
 
     private Gee.HashMap<Gtk.Widget, Gtk.Widget> menu_map;
-    private Gee.HashMap<Gtk.Widget, Gtk.Widget> submenu_map;
 
     const int MAX_ICON_SIZE = 22;
 
@@ -46,10 +45,9 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
         this.entry = entry;
         menu_map = new Gee.HashMap<Gtk.Widget, Gtk.Widget> ();
-        entry_name_hint = name_hint;
 
         if (entry.menu == null) {
-            critical ("TrayIcon: %s has no menu widget.", entry_name_hint);
+            critical ("TrayIcon: %s has no menu widget.", entry.name_hint);
             return;
         }
 
@@ -92,24 +90,14 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
         }
 
         visible = true;
-    }
 
-    public string name_hint () {
-        return entry_name_hint;
-    }
-
-    public bool on_button_press (Gdk.EventButton event) {
-        get_popover ().show_all ();
-
-        return Gdk.EVENT_PROPAGATE;
-    }
-
-    public Gtk.Popover get_popover () {
+        // Create popover
         main_stack = new Gtk.Stack ();
         main_stack.map.connect (() => {
             main_stack.set_visible_child (main_grid);
         });
         main_grid = new Gtk.Grid () {
+            orientation = Gtk.Orientation.VERTICAL,
             margin_top = 3,
             margin_bottom = 3
         };
@@ -122,17 +110,23 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
         entry.menu.insert.connect (on_menu_widget_insert);
         entry.menu.remove.connect (on_menu_widget_remove);
 
-        var popover = new Gtk.Popover (this);
+        popover = new Gtk.Popover (this);
         popover.add (main_stack);
-
-        return popover;
     }
+
+    public bool on_button_press (Gdk.EventButton event) {
+        popover.show_all ();
+
+        return Gdk.EVENT_PROPAGATE;
+    }
+
 
     private void on_menu_widget_insert (Gtk.Widget item) {
         var widget = convert_menu_widget (item);
         if (widget != null) {
             menu_map.set (item, widget);
-            main_grid.attach (widget, 0, position++, 1, 1);
+            main_grid.attach (widget, 0, position++);
+
             /* menuitem not visible */
             if (!item.visible) {
                 widget.no_show_all = true;
@@ -336,7 +330,6 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                 submenu.insert.connect ((sub_item) => {
                     var sub_menu_item = convert_menu_widget (sub_item);
                     if (sub_menu_item != null) {
-                        submenu_map.set (item, sub_menu_item);
                         connect_signals (sub_item, sub_menu_item);
                         sub_list.add (sub_menu_item);
                     }
@@ -346,7 +339,6 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                     var w = menu_map.get (item);
                     if (w != null) {
                         sub_list.remove (w);
-                        submenu_map.unset (item);
                     }
                 });
 
