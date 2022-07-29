@@ -15,26 +15,105 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class AyatanaCompatibility.MetaIndicator : Wingpanel.Indicator {
-    private Gee.HashSet<string> blacklist;
+public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
+    private Gee.HashSet<string> blacklist = new Gee.HashSet<string> ();
     private IndicatorFactory indicator_loader;
-    private Gtk.Box box;
-    private Gtk.Label label;
-    private Gtk.Stack stack;
-    private Gtk.Box? main_box = null;
-    public int cpt = 0; /* count indicators */
+    private Gtk.Stack main_stack;
+    private Gtk.Grid icons_grid;
+    private Gtk.Grid main_grid;
 
-    public MetaIndicator () {
+    public MainIndicator () {
         Object (code_name: "namarupa");
 
         load_blacklist ();
         indicator_loader = new IndicatorFactory ();
 
-        visible = true;
         var indicators = indicator_loader.get_indicators ();
 
+        visible = true;
+        init_main_grid ();
+
         foreach (var indicator in indicators) {
-            load_indicator (indicator);
+            icons_grid.add (indicator);
+        }
+
+        indicator_loader.entry_added.connect (create_entry);
+        indicator_loader.entry_removed.connect (delete_entry);
+    }
+
+    private void load_blacklist () {
+        blacklist.add ("nm-applet"); //old network indicator (duplicate)
+    }
+
+    private void init_main_grid () {
+        /*creates an empty box with no entry */
+
+        main_grid = new Gtk.Grid () {
+            orientation = Gtk.Orientation.VERTICAL
+        };
+
+        var no_icons_label = new Gtk.Label ("No tray icons") {
+            sensitive = false,
+            valign = Gtk.Align.CENTER,
+            halign = Gtk.Align.CENTER,
+            margin_top = 2,
+            margin_bottom = 2,
+            margin_start = 6,
+            margin_end = 6
+        };
+        no_icons_label.get_style_context ().add_class (Granite.STYLE_CLASS_H3_LABEL);
+        no_icons_label.show_all ();
+
+        icons_grid = new Gtk.Grid () {
+            orientation = Gtk.Orientation.HORIZONTAL,
+            margin_top = 6,
+            margin_bottom = 6,
+            margin_start = 12,
+            margin_end = 12,
+            column_spacing = 12
+        };
+        icons_grid.show_all ();
+
+        main_stack = new Gtk.Stack () {
+            hexpand = true
+        };
+        main_stack.add_named (icons_grid, "icons_grid");
+        main_stack.add_named (no_icons_label, "no_icons_label");
+        main_stack.get_style_context ().add_class (Gtk.STYLE_CLASS_SIDEBAR);
+
+        main_grid.add (main_stack);
+
+        switch_stack (false); /* show label */
+    }
+
+    private void create_entry (TrayIcon icon) {
+        if (blacklist.contains (icon.name_hint ())) {
+            return;
+        }
+
+        icons_grid.add (icon);
+        icons_grid.show_all ();
+
+        switch_stack (true);
+    }
+
+    private void delete_entry (TrayIcon icon) {
+        foreach (var child in icons_grid.get_children ()) {
+            if (child is TrayIcon && ((TrayIcon)child).code_name == icon.code_name) {
+                child.destroy ();
+                break;
+            }
+        }
+
+        switch_stack (icons_grid.get_children ().length () != 0);
+    }
+
+    private void switch_stack (bool show) {
+        //switch between label "No tray icons" and icons grid
+        if (show) {
+            main_stack.set_visible_child_name ("icons_grid");
+        } else {
+            main_stack.set_visible_child_name ("no_icons_label");
         }
     }
 
@@ -42,135 +121,16 @@ public class AyatanaCompatibility.MetaIndicator : Wingpanel.Indicator {
         return new Gtk.Image.from_icon_name ("view-more-horizontal-symbolic", Gtk.IconSize.SMALL_TOOLBAR);
     }
 
-    private void load_indicator (IndicatorIface indicator) {
-        var entries = indicator.get_entries ();
-
-        foreach (var entry in entries) {
-            create_entry (entry);
-        }
-
-        indicator.entry_added.connect (create_entry);
-        indicator.entry_removed.connect (delete_entry);
-    }
-
-    private void create_entry (Indicator indicator) {
-        if (blacklist.contains (indicator.name_hint ())) {
-            return;
-        }
-        if (main_box == null) {
-            init_main_box ();
-        }
-        cpt++;
-
-        box.add (indicator);
-        box.show_all ();
-
-        switch_stack (true);
-    }
-
-    private void delete_entry (Indicator indicator) {
-        foreach (var fbc in box.get_children ()) {
-            var child = (Gtk.Widget)fbc;
-            //see what append when two indicators have the same name ? 
-            if (child is Indicator && ((Indicator)child).code_name == indicator.code_name) {
-                child.destroy ();
-                cpt--;
-                if (cpt == 0) {
-                    switch_stack (false);
-                }
-                break;
-            }
-        }
-    }
-
-    private Gtk.Box init_main_box () {
-        /*create an empty box with no entry */
-
-        main_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
-        main_box.set_size_request (200, -1);
-
-        label = new Gtk.Label ("No tray icons") {
-            sensitive = false,
-            valign = Gtk.Align.CENTER,
-            margin_top = 2,
-            margin_bottom = 2,
-            margin_start = 6,
-            margin_end = 6
-        };
-        label.get_style_context ().add_class (Granite.STYLE_CLASS_H3_LABEL);
-        label.show_all ();
-
-        box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
-            margin = 6,
-            spacing = 10,
-            margin_start = 12,
-            margin_end = 12
-        };
-
-        stack = new Gtk.Stack () {
-            hexpand = true
-        };
-        stack.add_named (box, "box");
-        stack.add_named (label, "label");
-        stack.get_style_context ().add_class (Gtk.STYLE_CLASS_SIDEBAR);
-        main_box.add (stack);
-
-        switch_stack (false); /* label */
-
-        return main_box;
-    }
-
     public override Gtk.Widget? get_widget () {
-        if (main_box == null) {
-            init_main_box ();
-        }
-        return main_box;
-    }
-
-    private void switch_stack (bool show) {
-        //switch between label "no tray icon" and box vue
-        if (show) {
-            stack.set_visible_child_name ("box");
-        } else {
-            stack.set_visible_child_name ("label");
-        }
+        return main_grid;
     }
 
     public override void opened () {
+
     }
 
     public override void closed () {
 
-    }
-
-    private void load_blacklist () {
-        blacklist = new Gee.HashSet<string> ();
-        var blacklist_file = File.new_for_path ("/etc/wingpanel.d/ayatana.blacklist");
-        foreach (var entry in get_restrictions_from_file (blacklist_file)) {
-            blacklist.add (entry);
-        }
-        blacklist.add ("nm-applet"); //old network indicator (duplicate)
-    }
-
-    private string[] get_restrictions_from_file (File file) {
-        var restrictions = new string[] {};
-
-        if (file.query_exists ()) {
-            try {
-                var dis = new DataInputStream (file.read ());
-                string? line = null;
-
-                while ((line = dis.read_line ()) != null) {
-                    if (line.strip () != "") {
-                        restrictions += line;
-                    }
-                }
-            } catch (Error error) {
-                warning ("Unable to load restrictions file %s: %s\n", file.get_basename (), error.message);
-            }
-        }
-
-        return restrictions;
     }
 }
 
@@ -179,6 +139,6 @@ public Wingpanel.Indicator? get_indicator (Module module, Wingpanel.IndicatorMan
         return null;
 
     debug ("Activating AyatanaCompatibility Meta Indicator");
-    var indicator = new AyatanaCompatibility.MetaIndicator ();
+    var indicator = new AyatanaCompatibility.MainIndicator ();
     return indicator;
 }

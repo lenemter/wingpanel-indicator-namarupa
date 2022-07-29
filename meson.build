@@ -20,26 +20,17 @@ indicator_dir = indicator_dir_cmd.stdout().strip()
 # Other configs
 conf = configuration_data()
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
-conf.set_quoted('AYANATAINDICATORDIR', indicator_dir)
+conf.set_quoted('AYATANAINDICATORDIR', indicator_dir)
 add_global_arguments('-DDATADIR="' + get_option('datadir') + '"', language: 'c')
 configure_file(output: 'config.h', configuration: conf)
-config_h_dir = include_directories('.')
-
-# Arguments for C
-c_args = [
-  '-include', 'config.h',
-  '-w'
-]
 
 shared_module(
     meson.project_name(),
     'src/AyatanaIndicator.vala',
     'src/Indicator.vala',
     'src/IndicatorButton.vala',
-    'src/IndicatorIface.vala',
     'src/IndicatorFactory.vala',
-    'src/IndicatorLoader.vala',
-    'src/IndicatorObject.vala',
+    'src/TrayIcon.vala',
     dependencies: [
         dependency('glib-2.0'),
         dependency('gobject-2.0'),

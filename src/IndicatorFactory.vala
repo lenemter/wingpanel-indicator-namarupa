@@ -15,33 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class AyatanaCompatibility.IndicatorFactory : Object, IndicatorLoader {
-    private Gee.Collection<IndicatorIface> indicators;
+public class AyatanaCompatibility.IndicatorFactory : Object {
+    private Gee.HashMap<unowned IndicatorAyatana.ObjectEntry, TrayIcon> tray_icons = new Gee.HashMap<unowned IndicatorAyatana.ObjectEntry, TrayIcon> ();
+    private IndicatorAyatana.Object object;
 
-    public Gee.Collection<IndicatorIface> get_indicators () {
-        if (indicators == null) {
-            indicators = new Gee.LinkedList<IndicatorIface> ();
-            load_indicator (File.new_for_path (Constants.AYANATAINDICATORDIR), "libapplication.so");
-        }
+    public signal void entry_added (TrayIcon icon);
+    public signal void entry_removed (TrayIcon icon);
 
-        return indicators.read_only_view;
+    public Gee.Collection<TrayIcon> get_indicators () {
+        load_indicator (File.new_for_path (Constants.AYATANAINDICATORDIR));
+
+        return tray_icons.values.read_only_view;
     }
 
-    private void load_indicator (File parent_dir, string name) {
-        string indicator_path = parent_dir.get_child (name).get_path ();
+    private void load_indicator (File parent_dir) {
+        var indicator_path = parent_dir.get_child ("libapplication.so").get_path ();
         if (!FileUtils.test (indicator_path, FileTest.EXISTS)) {
-            debug ("No ayatana support possible because there is no Indicator Library: %s", name);
+            debug ("No ayatana support possible because there is no Indicator Library: %s", "libapplication.so");
             return;
         }
 
-        debug ("Loading Indicator Library: %s", name);
-        var indicator = new IndicatorAyatana.Object.from_file (indicator_path);
+        object = new IndicatorAyatana.Object.from_file (indicator_path);
+        
+        object.entry_added.connect (on_entry_added);
+        object.entry_removed.connect (on_entry_removed);
+    }
 
-        if (indicator != null) {
-            indicators.add (new IndicatorObject (indicator, name));
-        } else {
-            debug ("Unable to load %s: invalid object.", name);
+    private void on_entry_added (IndicatorAyatana.Object object, IndicatorAyatana.ObjectEntry entry) {
+        var entry_widget = new TrayIcon (entry);
+        tray_icons[entry] = entry_widget;
+        entry_added (entry_widget);
+    }
+
+    private void on_entry_removed (IndicatorAyatana.Object object, IndicatorAyatana.ObjectEntry entry) {
+        var entry_widget = tray_icons[entry];
+        if (entry_widget != null) {
+            tray_icons.unset (entry);
+            entry_removed (entry_widget);
         }
-
     }
 }

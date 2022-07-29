@@ -1,24 +1,22 @@
-/*
- * Copyright (c) 2011-2015 Wingpanel Developers (http://launchpad.net/wingpanel)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
- * Boston, MA 02110-1301, USA.
- */
-/*NAMARUPA */
+//  /*-
+//   * Copyright (c) 2015 Wingpanel Developers (http://launchpad.net/wingpanel)
+//   *
+//   * This program is free software: you can redistribute it and/or modify
+//   * it under the terms of the GNU Library General Public License as published by
+//   * the Free Software Foundation, either version 2.1 of the License, or
+//   * (at your option) any later version.
+//   *
+//   * This program is distributed in the hope that it will be useful,
+//   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   * GNU Library General Public License for more details.
+//   *
+//   * You should have received a copy of the GNU Library General Public License
+//   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//   */
 
-public class AyatanaCompatibility.Indicator : IndicatorButton {
+
+public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     public string code_name { get; construct; }
     public string display_name { get; construct; }
     public string description { get; construct; }
@@ -27,8 +25,6 @@ public class AyatanaCompatibility.Indicator : IndicatorButton {
     private Gtk.Grid main_grid;
 
     private unowned IndicatorAyatana.ObjectEntry entry;
-    private unowned IndicatorAyatana.Object parent_object;
-    private TrayIcon indicator;
     private string entry_name_hint;
 
     private Gee.HashMap<Gtk.Widget, Gtk.Widget> menu_map;
@@ -41,20 +37,19 @@ public class AyatanaCompatibility.Indicator : IndicatorButton {
     //group radiobuttons
     private Gtk.RadioButton? group_radio = null;
 
-    public Indicator (IndicatorAyatana.ObjectEntry entry, IndicatorAyatana.Object obj, TrayIcon indicator) {
+    public TrayIcon (IndicatorAyatana.ObjectEntry entry) {
         var name_hint = entry.name_hint;
 
         Object (code_name: "%s%s".printf ("ayatana-", name_hint),
                 display_name: "%s%s".printf ("ayatana-", name_hint),
                 description: _("Ayatana compatibility indicator"));
+
         this.entry = entry;
-        this.indicator = indicator;
-        parent_object = obj;
         menu_map = new Gee.HashMap<Gtk.Widget, Gtk.Widget> ();
         entry_name_hint = name_hint;
 
         if (entry.menu == null) {
-            critical ("Indicator: %s has no menu widget.", entry_name_hint);
+            critical ("TrayIcon: %s has no menu widget.", entry_name_hint);
             return;
         }
 
