@@ -175,7 +175,10 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     private Gtk.Widget? convert_menu_widget (Gtk.Widget item) {
         /* separator are GTK.SeparatorMenuItem, return a separator */
         if (item is Gtk.SeparatorMenuItem) {
-            var separator = new Gtk.Separator (Gtk.Orientation.HORIZONTAL);
+            var separator = new Gtk.Separator (Gtk.Orientation.HORIZONTAL) {
+                margin_top = 3,
+                margin_bottom = 3
+            };
             connect_signals (item, separator);
 
             return separator;
