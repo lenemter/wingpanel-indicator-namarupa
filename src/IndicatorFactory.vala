@@ -36,7 +36,7 @@ public class AyatanaCompatibility.IndicatorFactory : Object {
         }
 
         object = new IndicatorAyatana.Object.from_file (indicator_path);
-        
+
         object.entry_added.connect (on_entry_added);
         object.entry_removed.connect (on_entry_removed);
     }

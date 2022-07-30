@@ -186,7 +186,6 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
         /* all other items are genericmenuitems */
         var label = ((Gtk.MenuItem)item).label;
-        label = label.replace ("_", "");
 
         /*
          * get item type from atk accessibility
@@ -274,33 +273,25 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
         /* convert menuitem to a indicatorbutton */
         if (item is Gtk.MenuItem) {
-            Gtk.ModelButton button;
-
             if (image != null && image.pixbuf == null && image.icon_name != null) {
                 try {
-                    Gtk.IconTheme icon_theme = Gtk.IconTheme.get_default ();
-                    image.pixbuf = icon_theme.load_icon (image.icon_name, 16, 0);
+                    image.pixbuf = Gtk.IconTheme.get_default ().load_icon (image.icon_name, 16, 0);
                 } catch (Error e) {
                     warning (e.message);
                 }
             }
-            button = new Gtk.ModelButton () {
-                text = label
-            };
-            var hbox = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 3) {
-                margin_end = 12
-            };
+
+            var button_grid = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
+            button_grid.pack_start (new Gtk.Label (label), false, false, 0);
             if (image != null && image.pixbuf != null) {
-                var img = new Gtk.Image.from_pixbuf (image.pixbuf);
-                hbox.add (button);
-                hbox.add (img);
-                //Modelbutton = text OR icon not both
-                //button.icon = (image.pixbuf);
+                // I have no idea why it needs a new image
+                var icon = new Gtk.Image.from_pixbuf (image.pixbuf);
+                button_grid.pack_end (icon, false, false, 0);
             }
 
-            ((Gtk.CheckMenuItem)item).notify["label"].connect (() => {
-                button.text = ((Gtk.MenuItem)item).get_label ().replace ("_", "");
-            });
+            var button = new Gtk.ModelButton ();
+            button.get_child ().destroy ();
+            button.child = button_grid;
 
             button.set_state_flags (state, true);
 
@@ -362,11 +353,7 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
             }
 
             connect_signals (item, button);
-            if ((image != null && image.pixbuf != null)) {
-                return hbox;
-            } else {
-                return button;
-            }
+            return button;
         }
 
         return null;
