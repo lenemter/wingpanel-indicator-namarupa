@@ -16,11 +16,15 @@
  */
 
 public class AyatanaCompatibility.IndicatorFactory : Object {
-    private Gee.HashMap<unowned IndicatorAyatana.ObjectEntry, TrayIcon> tray_icons = new Gee.HashMap<unowned IndicatorAyatana.ObjectEntry, TrayIcon> ();
+    private Gee.HashMap<unowned IndicatorAyatana.ObjectEntry, TrayIcon> tray_icons;
     private IndicatorAyatana.Object object;
 
     public signal void entry_added (TrayIcon icon);
     public signal void entry_removed (TrayIcon icon);
+
+    construct {
+        tray_icons = new Gee.HashMap<unowned IndicatorAyatana.ObjectEntry, TrayIcon> ();
+    }
 
     public Gee.Collection<TrayIcon> get_indicators () {
         load_indicator (File.new_for_path (Constants.AYATANAINDICATORDIR));

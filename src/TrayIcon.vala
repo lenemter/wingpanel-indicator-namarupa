@@ -294,12 +294,14 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
             var submenu = ((Gtk.MenuItem)item).submenu;
             if (submenu != null) {
+                var scroll_window = new Gtk.ScrolledWindow (null, null);
+                scroll_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+                main_stack.add (scroll_window);
+
                 var sub_list = new Gtk.Box (Gtk.Orientation.VERTICAL, 0) {
                     margin_top = 3,
                     margin_bottom = 3
                 };
-                var scroll_window = new Gtk.ScrolledWindow (null, null);
-                scroll_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
                 scroll_window.add (sub_list);
 
                 var back_button = new Gtk.ModelButton () {
@@ -307,7 +309,6 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                     inverted = true,
                     menu_name = "main_grid"
                 };
-
                 sub_list.add (back_button);
                 sub_list.add (new AyatanaCompatibility.Widgets.Separator ());
 
@@ -326,19 +327,15 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                     }
                 });
 
-                submenu.remove.connect ((item) => {
-                    var widget = menu_map.get (item);
-                    if (widget != null) {
-                        sub_list.remove (widget);
+                submenu.remove.connect ((sub_item) => {
+                    var sub_menu_item = menu_map.get (sub_item);
+                    if (sub_menu_item != null) {
+                        sub_list.remove (sub_menu_item);
                     }
                 });
 
-                main_stack.add (scroll_window);
                 //Button opening the submenu
-                button = new Gtk.ModelButton () {
-                    text = label,
-                    menu_name = "submenu"
-                };
+                button.menu_name = "submenu";
 
                 // Switch to default
                 back_button.clicked.connect (() => {
@@ -349,7 +346,6 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                 button.clicked.connect (() => {
                     scroll_window.set_policy (Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER);
                     main_stack.set_visible_child (scroll_window);
-                    main_stack.show_all ();
                 });
             } else {
                 button.clicked.connect (() => {
@@ -368,8 +364,8 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
         var pixbuf = image.pixbuf;
 
         if (pixbuf != null && pixbuf.get_height () > MAX_ICON_SIZE) {
-            image.pixbuf = pixbuf.scale_simple ((int)((double)MAX_ICON_SIZE / pixbuf.get_height () * pixbuf.get_width ()),
-                                                MAX_ICON_SIZE, Gdk.InterpType.HYPER);
+            var dest_width = (int)((double)MAX_ICON_SIZE / pixbuf.get_height () * pixbuf.get_width ());
+            image.pixbuf = pixbuf.scale_simple (dest_width, MAX_ICON_SIZE, Gdk.InterpType.HYPER);
         }
     }
 }
