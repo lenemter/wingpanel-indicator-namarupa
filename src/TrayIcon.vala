@@ -34,10 +34,11 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     int position = 0;
 
     //group radiobuttons
-    private Gtk.RadioButton? group_radio = null;
+    private Gtk.RadioButton? radio_group = null;
 
     public TrayIcon (IndicatorAyatana.ObjectEntry entry) {
-        var name_hint = entry.name_hint;
+        var name_hint = entry.name_hint;  // Without this line:
+                                          // ayatana_compatibility_tray_icon_get_name_hint: assertion 'self != NULL' failed
 
         Object (code_name: "%s%s".printf ("ayatana-", name_hint),
                 display_name: "%s%s".printf ("ayatana-", name_hint),
@@ -47,7 +48,7 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
         menu_map = new Gee.HashMap<Gtk.Widget, Gtk.Widget> ();
 
         if (entry.menu == null) {
-            critical ("TrayIcon: %s has no menu widget.", entry.name_hint);
+            critical ("TrayIcon: %s has no menu widget.", name_hint);
             return;
         }
 
@@ -183,6 +184,7 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
         /* all other items are genericmenuitems */
         var label = ((Gtk.MenuItem)item).label;
+        label = label.replace ("_", "");  // Remove accels
 
         /*
          * get item type from atk accessibility
@@ -198,12 +200,12 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
         var state = item.get_state_flags ();
 
-        //RAZ group_radio
+        // Clear radio_group
         if (item_type != ATK_RADIO) {
-            group_radio = null;
+            radio_group = null;
         }
 
-        /* detect if it has a image */
+        // detect if it has a image
         Gtk.Image? image = null;
         var child = ((Gtk.Bin)item).get_child ();
         if (child != null) {
@@ -213,25 +215,41 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                 image = check_for_image (child as Gtk.Container);
             }
         }
+        if (image != null && image.pixbuf == null && image.icon_name != null) {
+            try {
+                image.pixbuf = Gtk.IconTheme.get_default ().load_icon (image.icon_name, 16, 0);
+            } catch (Error e) {
+                warning (e.message);
+            }
+        }
+        Gtk.Image? icon = null;
+        if (image != null && image.pixbuf != null) {
+            // I have no idea why it needs a new image
+            icon = new Gtk.Image.from_pixbuf (image.pixbuf);
+        }
 
+        // Item with checkbox
         if (item_type == ATK_CHECKBOX) {
-            var box_switch = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 5);
-            var lbl = new Gtk.Label (label) {
-                halign = Gtk.Align.START,
-                margin_start = 6,
-                margin_end = 6
+            var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+                margin_top = 6,
+                margin_bottom = 6,
+                margin_start = 12,
+                margin_end = 12,
             };
+
             var active = ((Gtk.CheckMenuItem)item).get_active ();
-            var button = new Gtk.Switch () {
-                state = active
+            var button = new Gtk.CheckButton.with_label (label) {
+                active = active
             };
 
-            box_switch.pack_start (lbl, true, true, 5);
-            box_switch.pack_end (button, false, false, 5);
+            box.pack_start (button, false, false, 0);
+            if (icon != null) {
+                box.pack_end (icon, false, false, 0);
+            }
 
-            button.state_set.connect ((b) => {
-                ((Gtk.CheckMenuItem)item).set_active (b);
-                return false;
+            button.toggled.connect ((b) => {
+                var is_active = b.active;
+                ((Gtk.CheckMenuItem)item).set_active (is_active);
             });
 
             connect_signals (item, button);
@@ -239,21 +257,29 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                 button.active = ((Gtk.CheckMenuItem)item).get_active ();
             });
 
-            return box_switch;
+            return box;
         }
 
-        //RADIO BUTTON
+        // Item with radio button
         if (item_type == ATK_RADIO) {
+            var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6) {
+                margin_top = 6,
+                margin_bottom = 6,
+                margin_start = 12,
+                margin_end = 12,
+            };
+
             var active = ((Gtk.CheckMenuItem)item).get_active ();
-            var button = new Gtk.RadioButton.with_label_from_widget (group_radio,label) {
-                margin = 5,
-                margin_start = 10,
+            var button = new Gtk.RadioButton.with_label_from_widget (radio_group, label) {
                 active = active
             };
 
-            if (group_radio == null) {
-                group_radio = button;
+            box.pack_start (button, false, false, 0);
+            if (icon != null) {
+                box.pack_end (icon, false, false, 0);
             }
+
+            radio_group = button;
 
             // do not remove
             button.clicked.connect (() => {
@@ -265,30 +291,25 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                 ((Gtk.RadioMenuItem)item).set_active (button.get_active ());
             });
 
-            return button;
+            return box;
         }
 
-        /* convert menuitem to a indicatorbutton */
+        // Convert menuitem to a indicatorbutton
         if (item is Gtk.MenuItem) {
-            if (image != null && image.pixbuf == null && image.icon_name != null) {
-                try {
-                    image.pixbuf = Gtk.IconTheme.get_default ().load_icon (image.icon_name, 16, 0);
-                } catch (Error e) {
-                    warning (e.message);
-                }
-            }
-
-            var button_grid = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
+            var button_grid = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6);
             button_grid.pack_start (new Gtk.Label (label), false, false, 0);
-            if (image != null && image.pixbuf != null) {
-                // I have no idea why it needs a new image
-                var icon = new Gtk.Image.from_pixbuf (image.pixbuf);
+            if (icon != null) {
                 button_grid.pack_end (icon, false, false, 0);
             }
 
             var button = new Gtk.ModelButton ();
             button.get_child ().destroy ();
             button.child = button_grid;
+
+            ((Gtk.CheckMenuItem)item).notify["label"].connect (() => {
+                button.text = ((Gtk.MenuItem)item).get_label ().replace ("_", "");  // Remove accels
+            });
+
 
             button.set_state_flags (state, true);
 
