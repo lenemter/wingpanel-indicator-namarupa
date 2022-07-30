@@ -29,6 +29,7 @@ shared_module(
     'src/Indicator.vala',
     'src/IndicatorButton.vala',
     'src/IndicatorFactory.vala',
+    'src/Separator.vala',
     'src/TrayIcon.vala',
     dependencies: [
         dependency('glib-2.0'),

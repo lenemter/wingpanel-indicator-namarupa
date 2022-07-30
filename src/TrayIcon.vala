@@ -175,10 +175,7 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     private Gtk.Widget? convert_menu_widget (Gtk.Widget item) {
         /* separator are GTK.SeparatorMenuItem, return a separator */
         if (item is Gtk.SeparatorMenuItem) {
-            var separator = new Gtk.Separator (Gtk.Orientation.HORIZONTAL) {
-                margin_top = 3,
-                margin_bottom = 3
-            };
+            var separator = new AyatanaCompatibility.Widgets.Separator ();
             connect_signals (item, separator);
 
             return separator;
@@ -296,23 +293,23 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
             button.set_state_flags (state, true);
 
             var submenu = ((Gtk.MenuItem)item).submenu;
-            var sub_list = new Gtk.ListBox ();
-
             if (submenu != null) {
-                var scroll_sub = new Gtk.ScrolledWindow (null, null);
-                scroll_sub.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
-                scroll_sub.add (sub_list);
+                var sub_list = new Gtk.Box (Gtk.Orientation.VERTICAL, 0) {
+                    margin_top = 3,
+                    margin_bottom = 3
+                };
+                var scroll_window = new Gtk.ScrolledWindow (null, null);
+                scroll_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+                scroll_window.add (sub_list);
 
                 var back_button = new Gtk.ModelButton () {
                     text = _("Back"),
                     inverted = true,
                     menu_name = "main_grid"
                 };
-                back_button.clicked.connect (() => {
-                    main_stack.set_visible_child (main_grid);
-                });
+
                 sub_list.add (back_button);
-                sub_list.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
+                sub_list.add (new AyatanaCompatibility.Widgets.Separator ());
 
                 //adding submenu items
                 foreach (var sub_item in submenu.get_children ()) {
@@ -330,20 +327,28 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                 });
 
                 submenu.remove.connect ((item) => {
-                    var w = menu_map.get (item);
-                    if (w != null) {
-                        sub_list.remove (w);
+                    var widget = menu_map.get (item);
+                    if (widget != null) {
+                        sub_list.remove (widget);
                     }
                 });
 
-                main_stack.add (scroll_sub);
+                main_stack.add (scroll_window);
                 //Button opening the submenu
                 button = new Gtk.ModelButton () {
                     text = label,
                     menu_name = "submenu"
                 };
+
+                // Switch to default
+                back_button.clicked.connect (() => {
+                    scroll_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+                    main_stack.set_visible_child (main_grid);
+                });
+                // Switch to submenu
                 button.clicked.connect (() => {
-                    main_stack.set_visible_child (scroll_sub);
+                    scroll_window.set_policy (Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER);
+                    main_stack.set_visible_child (scroll_window);
                     main_stack.show_all ();
                 });
             } else {
