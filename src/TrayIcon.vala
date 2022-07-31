@@ -22,7 +22,6 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
     private Gtk.Stack main_stack;
     private Gtk.Grid main_grid;
-    private Gtk.Popover popover;
 
     private unowned IndicatorAyatana.ObjectEntry entry;
     public string name_hint { get { return entry.name_hint; } }
@@ -52,14 +51,24 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
             return;
         }
 
-        add_events (Gdk.EventMask.BUTTON_PRESS_MASK);
+        setup_tray_icon ();
 
+        /*
+         * Workaround for buggy indicators: this menu may still be part of
+         * another panel entry which hasn't been destroyed yet. Those indicators
+         * trigger entry-removed after entry-added, which means that the previous
+         * parent is still in the panel when the new one is added.
+         */
+        if (entry.menu.get_attach_widget () != null) {
+            entry.menu.detach ();
+        }
+    }
+
+    private void setup_tray_icon () {
         var image = entry.image;
         if (image != null) {
-            /*
-             * images holding pixbufs are quite frequently way too large, so we whenever a pixbuf
-             * is assigned to an image we need to check whether this pixbuf is within reasonable size
-             */
+            // images holding pixbufs are quite frequently way too large, so we whenever a pixbuf
+            // is assigned to an image we need to check whether this pixbuf is within reasonable size
             if (image.storage_type == Gtk.ImageType.PIXBUF) {
                 image.notify["pixbuf"].connect (() => {
                     ensure_max_size (image);
@@ -78,21 +87,23 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
             set_widget (IndicatorButton.WidgetSlot.LABEL, label);
         }
 
-        button_press_event.connect (on_button_press);
-
-        /*
-         * Workaround for buggy indicators: this menu may still be part of
-         * another panel entry which hasn't been destroyed yet. Those indicators
-         * trigger entry-removed after entry-added, which means that the previous
-         * parent is still in the panel when the new one is added.
-         */
-        if (entry.menu.get_attach_widget () != null) {
-            entry.menu.detach ();
-        }
-
         visible = true;
 
-        // Create popover
+        add_events (Gdk.EventMask.BUTTON_PRESS_MASK);  // Listen to clicks
+        button_press_event.connect (on_button_press);
+    }
+
+    public bool on_button_press (Gdk.EventButton event) {
+        generate_new_popover ().show_all ();
+
+        return Gdk.EVENT_PROPAGATE;
+    }
+
+    private Gtk.Popover generate_new_popover () {
+        // Generating new popover every time fixes some issues with submenus
+
+        menu_map.clear ();
+
         main_stack = new Gtk.Stack ();
         main_stack.map.connect (() => {
             main_stack.set_visible_child (main_grid);
@@ -111,19 +122,14 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
         entry.menu.insert.connect (on_menu_widget_insert);
         entry.menu.remove.connect (on_menu_widget_remove);
 
-        popover = new Gtk.Popover (this);
+        var popover = new Gtk.Popover (this);
         popover.add (main_stack);
+
+        return popover;
     }
-
-    public bool on_button_press (Gdk.EventButton event) {
-        popover.show_all ();
-
-        return Gdk.EVENT_PROPAGATE;
-    }
-
 
     private void on_menu_widget_insert (Gtk.Widget item) {
-        var widget = convert_menu_widget (item);
+        var widget = convert_menu_widget (item);  // Separator or Box
         if (widget != null) {
             menu_map.set (item, widget);
             main_grid.attach (widget, 0, position++);
@@ -297,7 +303,8 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
         // Convert menuitem to a indicatorbutton
         if (item is Gtk.MenuItem) {
             var button_grid = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6);
-            button_grid.pack_start (new Gtk.Label (label), false, false, 0);
+            var lbl = new Gtk.Label (label);
+            button_grid.pack_start (lbl, false, false, 0);
             if (icon != null) {
                 button_grid.pack_end (icon, false, false, 0);
             }
@@ -306,10 +313,9 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
             button.get_child ().destroy ();
             button.child = button_grid;
 
-            ((Gtk.CheckMenuItem)item).notify["label"].connect (() => {
-                button.text = ((Gtk.MenuItem)item).get_label ().replace ("_", "");  // Remove accels
+            item.notify["label"].connect (() => {
+                lbl.label = ((Gtk.MenuItem)item).get_label ().replace ("_", "");  // Remove accels
             });
-
 
             button.set_state_flags (state, true);
 

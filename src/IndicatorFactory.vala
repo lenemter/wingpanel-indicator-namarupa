@@ -46,7 +46,6 @@ public class AyatanaCompatibility.IndicatorFactory : Object {
     }
 
     private void on_entry_added (IndicatorAyatana.Object object, IndicatorAyatana.ObjectEntry entry) {
-
         // Dont show old network applet
         if (entry.name_hint == "nm-applet") {
             return;
