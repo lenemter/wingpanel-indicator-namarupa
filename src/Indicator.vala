@@ -55,11 +55,8 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
 
         icons_grid = new Gtk.Grid () {
             orientation = Gtk.Orientation.HORIZONTAL,
-            margin_top = 6,
-            margin_bottom = 6,
-            margin_start = 12,
-            margin_end = 12,
-            column_spacing = 12
+            margin_start = 6,
+            margin_end = 6,
         };
         icons_grid.show_all ();
 
