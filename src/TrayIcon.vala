@@ -21,7 +21,7 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     public string description { get; construct; }
 
     private Gtk.Stack main_stack;
-    private Gtk.Grid main_grid;
+    private Gtk.Box main_box;
 
     private unowned IndicatorAyatana.ObjectEntry entry;
     public string name_hint { get { return entry.name_hint; } }
@@ -29,8 +29,6 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     private Gee.HashMap<Gtk.Widget, Gtk.Widget> menu_map;
 
     const int MAX_ICON_SIZE = 22;
-
-    int position = 0;
 
     //group radiobuttons
     private Gtk.RadioButton? radio_group = null;
@@ -106,14 +104,13 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
         main_stack = new Gtk.Stack ();
         main_stack.map.connect (() => {
-            main_stack.set_visible_child (main_grid);
+            main_stack.set_visible_child (main_box);
         });
-        main_grid = new Gtk.Grid () {
-            orientation = Gtk.Orientation.VERTICAL,
+        main_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0) {
             margin_top = 3,
             margin_bottom = 3
         };
-        main_stack.add (main_grid);
+        main_stack.add (main_box);
 
         foreach (var item in entry.menu.get_children ()) {
             on_menu_widget_insert (item);
@@ -131,8 +128,8 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     private void on_menu_widget_insert (Gtk.Widget item) {
         var widget = convert_menu_widget (item);  // Separator or Box
         if (widget != null) {
-            menu_map.set (item, widget);
-            main_grid.attach (widget, 0, position++);
+            menu_map[item] = widget;
+            main_box.add (widget);
 
             /* menuitem not visible */
             if (!item.visible) {
@@ -147,7 +144,7 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     private void on_menu_widget_remove (Gtk.Widget item) {
         var widget = menu_map.get (item);
         if (widget != null) {
-            main_grid.remove (widget);
+            main_box.remove (widget);
             menu_map.unset (item);
         }
     }
@@ -302,16 +299,16 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
 
         // Convert menuitem to a indicatorbutton
         if (item is Gtk.MenuItem) {
-            var button_grid = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6);
+            var button_box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 6);
             var lbl = new Gtk.Label (label);
-            button_grid.pack_start (lbl, false, false, 0);
+            button_box.pack_start (lbl, false, false, 0);
             if (icon != null) {
-                button_grid.pack_end (icon, false, false, 0);
+                button_box.pack_end (icon, false, false, 0);
             }
 
             var button = new Gtk.ModelButton ();
             button.get_child ().destroy ();
-            button.child = button_grid;
+            button.child = button_box;
 
             item.notify["label"].connect (() => {
                 lbl.label = ((Gtk.MenuItem)item).get_label ().replace ("_", "");  // Remove accels
@@ -334,7 +331,7 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                 var back_button = new Gtk.ModelButton () {
                     text = _("Back"),
                     inverted = true,
-                    menu_name = "main_grid"
+                    menu_name = "main_box"
                 };
                 sub_list.add (back_button);
                 sub_list.add (new AyatanaCompatibility.Widgets.Separator ());
@@ -367,7 +364,7 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
                 // Switch to default
                 back_button.clicked.connect (() => {
                     scroll_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
-                    main_stack.set_visible_child (main_grid);
+                    main_stack.set_visible_child (main_box);
                 });
                 // Switch to submenu
                 button.clicked.connect (() => {

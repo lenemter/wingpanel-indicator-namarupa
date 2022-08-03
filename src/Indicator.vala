@@ -19,7 +19,6 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
     private IndicatorFactory indicator_loader;
     private Gtk.Stack main_stack;
     private Gtk.Grid icons_grid;
-    private Gtk.Grid main_grid;
 
     public MainIndicator () {
         Object (code_name: "namarupa");
@@ -29,7 +28,7 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
         var indicators = indicator_loader.get_indicators ();
 
         visible = true;
-        init_main_grid ();
+        init_ui ();
 
         foreach (var indicator in indicators) {
             icons_grid.add (indicator);
@@ -39,12 +38,8 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
         indicator_loader.entry_removed.connect (delete_entry);
     }
 
-    private void init_main_grid () {
+    private void init_ui () {
         /*creates an empty box with no entry */
-
-        main_grid = new Gtk.Grid () {
-            orientation = Gtk.Orientation.VERTICAL
-        };
 
         var no_icons_label = new Gtk.Label ("No tray icons") {
             sensitive = false,
@@ -74,8 +69,6 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
         main_stack.add_named (icons_grid, "icons_grid");
         main_stack.add_named (no_icons_label, "no_icons_label");
         main_stack.get_style_context ().add_class (Gtk.STYLE_CLASS_SIDEBAR);
-
-        main_grid.add (main_stack);
 
         switch_stack (false); /* show label */
     }
@@ -112,7 +105,7 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
     }
 
     public override Gtk.Widget? get_widget () {
-        return main_grid;
+        return main_stack;
     }
 
     public override void opened () {
