@@ -17,7 +17,7 @@ add_project_arguments(
     language: 'vala'
 )
 add_project_arguments(
-    '-DG_LOG_DOMAIN="com.github.donadigo.wingpanel-indicator-namarupa"',
+    '-DG_LOG_DOMAIN="com.github.lenemter.wingpanel-indicator-namarupa"',
     language:'c'
 )
 
