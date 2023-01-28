@@ -8,19 +8,13 @@ The name Namarupa is used for the forces at play that govern the Ayatana, in Bud
 
 ## Before Installation
 
-You need indicator-application:
-
-```bash
-sudo apt install indicator-application
-```
-
 You need to add Pantheon to the list of desktops abled to work with indicators:  
 
 - With autostart (thanks to JMoerman)  
 
 System settings -> Applications -> Startup -> Add Startup App… -> Type in a custom command
 
-Add `/usr/lib/x86_64-linux-gnu/indicator-application/indicator-application-service` as custom command to the autostart applications in the System Settings  
+Add `/usr/lib/x86_64-linux-gnu/indicator-application/indicator-application-service` as custom command to the autostart applications in the System Settings
 
 - OR Open Terminal and run the following commands:
 
@@ -36,21 +30,21 @@ TODO: Finish this
 
 Install the latest debian file:
 
-- Download <a href="https://github.com/lenemter/wingpanel-indicator-namarupa/blob/master/com.github.donadigo.wingpanel-indicator-namarupa_1.0.2_odin.deb-broken">com.github.*odin.deb (broken)</a>
+- Download [com.github.*odin.deb (broken)](https://github.com/lenemter/wingpanel-indicator-namarupa/blob/master/com.github.lenemter.wingpanel-indicator-namarupa_1.0.2_odin.deb-broken)</a>
 - Open your Downloads folder in Files
 - Right click -> Open in -> Terminal
 
 ```bash
-sudo apt install ./com.github.donadigo.wingpanel*.deb (broken)
+sudo apt install ./com.github.lenemter.wingpanel*.deb (broken)
 ```
 
 Easy uninstall after easy install:
 
 ```bash
-sudo apt remove com.github.donadigo.wingpanel-indicator-namarupa
+sudo apt remove com.github.lenemter.wingpanel-indicator-namarupa
 ```
 
-Reboot (`reboot`) or kill Wingpanel (`killall io.elementary.wingpanel`)
+Reboot
   
 ## For developers
 
