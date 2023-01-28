@@ -32,6 +32,8 @@ sed -i 's/^OnlyShowIn.*/OnlyShowIn=Unity;GNOME;Pantheon;/' ~/.config/autostart/i
 
 ## Installation for users
 
+TODO: Finish this
+
 Install the latest debian file:
 
 - Download <a href="https://github.com/lenemter/wingpanel-indicator-namarupa/blob/master/com.github.donadigo.wingpanel-indicator-namarupa_1.0.2_odin.deb-broken">com.github.*odin.deb (broken)</a>
@@ -54,6 +56,7 @@ Reboot (`reboot`) or kill Wingpanel (`killall io.elementary.wingpanel`)
 
 You'll need the following dependencies:
 
+- libglib2.0-dev
 - libgranite-dev
 - libindicator3-dev
 - libwingpanel-dev

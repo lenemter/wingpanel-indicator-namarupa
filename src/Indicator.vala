@@ -46,12 +46,14 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
             margin_end = 6
         };
         no_icons_label.get_style_context ().add_class (Granite.STYLE_CLASS_H3_LABEL);
+        no_icons_label.show_all ();
 
         icons_grid = new Gtk.Grid () {
             orientation = Gtk.Orientation.HORIZONTAL,
             margin_start = 6,
             margin_end = 6,
         };
+        icons_grid.show_all ();
 
         main_stack = new Gtk.Stack () {
             hexpand = true

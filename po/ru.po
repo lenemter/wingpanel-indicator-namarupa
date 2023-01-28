@@ -1,0 +1,21 @@
+# Russian translation for namarupa-indicator.
+# Copyright (C) 2023 namarupa-indicator'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the namarupa-indicator package.
+# lenemter <lenemter@gmail.com>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: namarupa-indicator\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-28 19:03+0900\n"
+"PO-Revision-Date: 2023-01-28 18:52+0900\n"
+"Last-Translator: lenemter <lenemter@gmail.com>\n"
+"Language-Team: ru\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/Indicator.vala:39
+msgid "No tray icons"
+msgstr "Пусто"
