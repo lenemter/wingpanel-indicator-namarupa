@@ -1,31 +1,37 @@
 project(
     'namarupa',
     'vala', 'c',
-    version: '1.0.3'
+    version: '1.0.3',
+    meson_version: '>=0.58'
 )
 
-i18n = import('i18n')
 gettext_name = meson.project_name() + '-indicator'
+i18n = import('i18n')
 
-add_global_arguments('-DGETTEXT_PACKAGE="@0@"'.format(gettext_name), language:'c')
-add_project_arguments(['--vapidir', join_paths(meson.current_source_dir(), 'vapi')], language: 'vala')
+add_global_arguments(
+    '-DGETTEXT_PACKAGE="@0@"'.format(gettext_name),
+    language:'c'
+)
+add_project_arguments(
+    '--vapidir', meson.current_source_dir() / 'vapi',
+    language: 'vala'
+)
+add_project_arguments(
+    '-DG_LOG_DOMAIN="com.github.donadigo.wingpanel-indicator-namarupa"',
+    language:'c'
+)
 
-indicator_dir_cmd = run_command('pkg-config', 'indicator3-0.4', '--variable=indicatordir')
-if indicator_dir_cmd.returncode() != 0
-  message ('Indicator directory not found')
-endif
-
-indicator_dir = indicator_dir_cmd.stdout().strip()
+indicator_dir = run_command('pkg-config', 'indicator3-0.4', '--variable=indicatordir').stdout().strip()
 
 # Other configs
-conf = configuration_data()
-conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
-conf.set_quoted('AYATANAINDICATORDIR', indicator_dir)
-add_global_arguments('-DDATADIR="' + get_option('datadir') + '"', language: 'c')
-configure_file(output: 'config.h', configuration: conf)
+config_data = configuration_data()
+config_data.set_quoted('GETTEXT_PACKAGE', gettext_name)
+config_data.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
+config_data.set_quoted('AYATANAINDICATORDIR', indicator_dir)
 
 shared_module(
     meson.project_name(),
+    configure_file(input: 'src/Config.vala.in', output: '@BASENAME@', configuration: config_data),
     'src/Indicator.vala',
     'src/IndicatorButton.vala',
     'src/IndicatorFactory.vala',
@@ -39,9 +45,8 @@ shared_module(
         dependency('wingpanel'),
         dependency('indicator3-0.4')
     ],
-    vala_args: [
-        meson.source_root() + '/vapi/config.vapi'
-    ],
     install: true,
-    install_dir : dependency('wingpanel').get_pkgconfig_variable('indicatorsdir')
+    install_dir : dependency('wingpanel').get_variable('indicatorsdir')
 )
+
+subdir('po')

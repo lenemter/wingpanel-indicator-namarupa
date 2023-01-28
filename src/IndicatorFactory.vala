@@ -27,7 +27,7 @@ public class AyatanaCompatibility.IndicatorFactory : Object {
     }
 
     public Gee.Collection<TrayIcon> get_indicators () {
-        load_indicator (File.new_for_path (Constants.AYATANAINDICATORDIR));
+        load_indicator (File.new_for_path (AYATANAINDICATORDIR));
 
         return tray_icons.values.read_only_view;
     }

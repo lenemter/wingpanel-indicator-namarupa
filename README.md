@@ -54,18 +54,16 @@ Reboot (`reboot`) or kill Wingpanel (`killall io.elementary.wingpanel`)
 
 You'll need the following dependencies:
 
-- libglib2.0-dev
 - libgranite-dev
 - libindicator3-dev
 - libwingpanel-dev
 - valac
-- meson
-- gcc
+- meson (>= 0.58)
 
 Install them with:
 
 ```bash
-sudo apt install libglib2.0-dev libgranite-dev libwingpanel-dev libindicator3-dev valac meson gcc
+sudo apt install libglib2.0-dev libgranite-dev libwingpanel-dev libindicator3-dev valac meson
 ```
 
 Run meson to configure the build environment and then ninja to build and install:

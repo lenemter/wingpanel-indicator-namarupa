@@ -16,10 +16,6 @@
 //   */
 
 public class AyatanaCompatibility.TrayIcon : IndicatorButton {
-    public string code_name { get; construct; }
-    public string display_name { get; construct; }
-    public string description { get; construct; }
-
     private Gtk.Stack main_stack;
     private Gtk.Box main_box;
 
@@ -36,10 +32,6 @@ public class AyatanaCompatibility.TrayIcon : IndicatorButton {
     public TrayIcon (IndicatorAyatana.ObjectEntry entry) {
         var name_hint = entry.name_hint;  // Without this line:
                                           // ayatana_compatibility_tray_icon_get_name_hint: assertion 'self != NULL' failed
-
-        Object (code_name: "%s%s".printf ("ayatana-", name_hint),
-                display_name: "%s%s".printf ("ayatana-", name_hint),
-                description: _("Ayatana compatibility indicator"));
 
         this.entry = entry;
         menu_map = new Gee.HashMap<Gtk.Widget, Gtk.Widget> ();

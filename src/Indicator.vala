@@ -22,26 +22,21 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
 
     public MainIndicator () {
         Object (code_name: "namarupa");
+    }
+
+    construct {
+        Intl.setlocale (LocaleCategory.ALL, "");
+        Intl.bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+        Intl.bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+        Intl.textdomain (GETTEXT_PACKAGE);
 
         indicator_loader = new IndicatorFactory ();
 
         var indicators = indicator_loader.get_indicators ();
 
         visible = true;
-        init_ui ();
 
-        foreach (var indicator in indicators) {
-            icons_grid.add (indicator);
-        }
-
-        indicator_loader.entry_added.connect (create_entry);
-        indicator_loader.entry_removed.connect (delete_entry);
-    }
-
-    private void init_ui () {
-        /*creates an empty box with no entry */
-
-        var no_icons_label = new Gtk.Label ("No tray icons") {
+        var no_icons_label = new Gtk.Label (_("No tray icons")) {
             sensitive = false,
             valign = Gtk.Align.CENTER,
             halign = Gtk.Align.CENTER,
@@ -51,14 +46,12 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
             margin_end = 6
         };
         no_icons_label.get_style_context ().add_class (Granite.STYLE_CLASS_H3_LABEL);
-        no_icons_label.show_all ();
 
         icons_grid = new Gtk.Grid () {
             orientation = Gtk.Orientation.HORIZONTAL,
             margin_start = 6,
             margin_end = 6,
         };
-        icons_grid.show_all ();
 
         main_stack = new Gtk.Stack () {
             hexpand = true
@@ -68,6 +61,13 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
         main_stack.get_style_context ().add_class (Gtk.STYLE_CLASS_SIDEBAR);
 
         switch_stack (false); /* show label */
+
+        foreach (var indicator in indicators) {
+            icons_grid.add (indicator);
+        }
+
+        indicator_loader.entry_added.connect (create_entry);
+        indicator_loader.entry_removed.connect (delete_entry);
     }
 
     private void create_entry (TrayIcon icon) {
@@ -78,12 +78,7 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
     }
 
     private void delete_entry (TrayIcon icon) {
-        foreach (var child in icons_grid.get_children ()) {
-            if (child is TrayIcon && ((TrayIcon)child).code_name == icon.code_name) {
-                child.destroy ();
-                break;
-            }
-        }
+        icon.destroy ();
 
         switch_stack (icons_grid.get_children ().length () != 0);
     }
@@ -119,6 +114,9 @@ public Wingpanel.Indicator? get_indicator (Module module, Wingpanel.IndicatorMan
         return null;
 
     debug ("Activating AyatanaCompatibility Meta Indicator");
+
+
+
     var indicator = new AyatanaCompatibility.MainIndicator ();
     return indicator;
 }
