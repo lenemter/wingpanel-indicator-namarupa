@@ -6,24 +6,6 @@
 
 The name Namarupa is used for the forces at play that govern the Ayatana, in Buddhism. Since this indicator manages the system tray icons which are under the Ayatana project, it seems clever to name this Namarupa.
 
-## Before Installation
-
-You need to add Pantheon to the list of desktops abled to work with indicators:  
-
-- With autostart (thanks to JMoerman)  
-
-System settings -> Applications -> Startup -> Add Startup App… -> Type in a custom command
-
-Add `/usr/lib/x86_64-linux-gnu/indicator-application/indicator-application-service` as custom command to the autostart applications in the System Settings
-
-- OR Open Terminal and run the following commands:
-
-```bash
-mkdir -p ~/.config/autostart
-cp /etc/xdg/autostart/indicator-application.desktop ~/.config/autostart/
-sed -i 's/^OnlyShowIn.*/OnlyShowIn=Unity;GNOME;Pantheon;/' ~/.config/autostart/indicator-application.desktop
-```
-
 ## Installation for users
 
 Install the latest debian file:
@@ -36,7 +18,17 @@ Install the latest debian file:
 sudo apt install ./com.github.lenemter.wingpanel-indicator-namarupa.deb
 ```
 
-Easy uninstall after easy install:
+You need to add Pantheon to the list of desktops allowed to work with indicators:  
+
+- Open Terminal and run the following commands:
+
+```bash
+mkdir -p ~/.config/autostart
+cp /etc/xdg/autostart/indicator-application.desktop ~/.config/autostart/
+sed -i 's/^OnlyShowIn.*/OnlyShowIn=Unity;GNOME;Pantheon;/' ~/.config/autostart/indicator-application.desktop
+```
+
+## Uninstalling for users
 
 ```bash
 sudo apt remove com.github.lenemter.wingpanel-indicator-namarupa
