@@ -1,5 +1,6 @@
 /*-
- * Copyright (c) 2015 Wingpanel Developers (http://launchpad.net/wingpanel)
+ * Copyright 2015 Wingpanel Developers (http://launchpad.net/wingpanel)
+ *           2022 lenemter <lenemter@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as published by
