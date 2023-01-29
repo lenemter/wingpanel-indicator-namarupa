@@ -21,13 +21,11 @@ add_project_arguments(
     language:'c'
 )
 
-indicator_dir = dependency('indicator3-0.4').get_variable('indicatordir')
-
 # Other configs
 config_data = configuration_data()
 config_data.set_quoted('GETTEXT_PACKAGE', gettext_name)
 config_data.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
-config_data.set_quoted('AYATANAINDICATORDIR', indicator_dir)
+config_data.set_quoted('AYATANAINDICATORDIR', dependency('indicator3-0.4').get_variable('indicatordir'))
 
 shared_module(
     meson.project_name(),
