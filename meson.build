@@ -21,7 +21,7 @@ add_project_arguments(
     language:'c'
 )
 
-indicator_dir = run_command('pkg-config', 'indicator3-0.4', '--variable=indicatordir').stdout().strip()
+indicator_dir = dependency('indicator3-0.4').get_variable('indicatordir')
 
 # Other configs
 config_data = configuration_data()
