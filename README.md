@@ -10,7 +10,7 @@ The name Namarupa is used for the forces at play that govern the Ayatana, in Bud
 
 Install the latest debian file:
 
-- Download [com.github.lenemter.wingpanel-indicator-namarupa.deb](https://github.com/lenemter/wingpanel-indicator-namarupa/blob/main/com.github.lenemter.wingpanel-indicator-namarupa.deb)</a>
+- Download [com.github.lenemter.wingpanel-indicator-namarupa.deb](https://github.com/lenemter/wingpanel-indicator-namarupa/raw/main/com.github.lenemter.wingpanel-indicator-namarupa.deb)</a>
 - Open your Downloads folder in Files
 - Right click -> Open in -> Terminal
 
