@@ -28,6 +28,8 @@ cp /etc/xdg/autostart/indicator-application.desktop ~/.config/autostart/
 sed -i 's/^OnlyShowIn.*/OnlyShowIn=Unity;GNOME;Pantheon;/' ~/.config/autostart/indicator-application.desktop
 ```
 
+Reboot
+
 ## Uninstalling for users
 
 ```bash
