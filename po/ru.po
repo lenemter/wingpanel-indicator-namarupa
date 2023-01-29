@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: namarupa-indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-28 19:03+0900\n"
+"POT-Creation-Date: 2023-01-29 18:54+0900\n"
 "PO-Revision-Date: 2023-01-28 18:52+0900\n"
 "Last-Translator: lenemter <lenemter@gmail.com>\n"
 "Language-Team: ru\n"
@@ -19,3 +19,7 @@ msgstr ""
 #: src/Indicator.vala:39
 msgid "No tray icons"
 msgstr "Пусто"
+
+#: src/TrayIcon.vala:324
+msgid "Back"
+msgstr "Назад"

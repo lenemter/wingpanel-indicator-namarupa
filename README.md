@@ -26,16 +26,14 @@ sed -i 's/^OnlyShowIn.*/OnlyShowIn=Unity;GNOME;Pantheon;/' ~/.config/autostart/i
 
 ## Installation for users
 
-TODO: Finish this
-
 Install the latest debian file:
 
-- Download [com.github.*odin.deb (broken)](https://github.com/lenemter/wingpanel-indicator-namarupa/blob/master/com.github.lenemter.wingpanel-indicator-namarupa_1.0.2_odin.deb-broken)</a>
+- Download [com.github.lenemter.wingpanel-indicator-namarupa.deb](https://github.com/lenemter/wingpanel-indicator-namarupa/blob/main/com.github.lenemter.wingpanel-indicator-namarupa.deb)</a>
 - Open your Downloads folder in Files
 - Right click -> Open in -> Terminal
 
 ```bash
-sudo apt install ./com.github.lenemter.wingpanel*.deb (broken)
+sudo apt install ./com.github.lenemter.wingpanel-indicator-namarupa.deb
 ```
 
 Easy uninstall after easy install:
