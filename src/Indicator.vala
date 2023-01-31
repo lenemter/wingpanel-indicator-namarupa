@@ -37,7 +37,7 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
 
         visible = true;
 
-        var no_icons_label = new Gtk.Label (_("No tray icons")) {
+        var no_icons_label = new Gtk.Label (_("No Tray Icons")) {
             sensitive = false,
             valign = Gtk.Align.CENTER,
             halign = Gtk.Align.CENTER,
@@ -87,7 +87,7 @@ public class AyatanaCompatibility.MainIndicator : Wingpanel.Indicator {
     }
 
     private void switch_stack (bool show) {
-        //switch between label "No tray icons" and icons grid
+        //switch between label "No Tray Icons" and icons grid
         if (show) {
             main_stack.set_visible_child_name ("icons_grid");
         } else {
