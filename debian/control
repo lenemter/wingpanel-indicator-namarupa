@@ -11,10 +11,11 @@ Build-Depends: debhelper (>= 10.5.1),
                meson (>= 0.58),
                valac (>= 0.40.0)
 Standards-Version: 4.1.1
+Homepage: https://github.com/lenemter/wingpanel-indicator-namarupa
 
 Package: com.github.lenemter.wingpanel-indicator-namarupa
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, indicator-application
-Enhances: wingpanel
+Enhances: io.elementary.wingpanel
 Description: Wingpanel Namarupa Indicator
  This brings compatibility with Ayatana Indicator 
